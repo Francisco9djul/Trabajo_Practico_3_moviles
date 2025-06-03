@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const TASKS_STORAGE_KEY = '@tasks_storage_key';
 
 type TaskContextType = {
   tasks: string[];
@@ -12,6 +15,33 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = useState<string[]>([]);
 
+  // Cargar tareas almacenadas al inicio
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const savedTasks = await AsyncStorage.getItem(TASKS_STORAGE_KEY);
+        if (savedTasks) {
+          setTasks(JSON.parse(savedTasks));
+        }
+      } catch (error) {
+        console.error('Error cargando tareas de AsyncStorage:', error);
+      }
+    };
+    loadTasks();
+  }, []);
+
+  // Guardar tareas en AsyncStorage cuando cambien
+  useEffect(() => {
+    const saveTasks = async () => {
+      try {
+        await AsyncStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      } catch (error) {
+        console.error('Error guardando tareas en AsyncStorage:', error);
+      }
+    };
+    saveTasks();
+  }, [tasks]);
+
   const addTask = (task: string) => {
     setTasks((prev) => [...prev, task]);
   };
@@ -23,9 +53,8 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const deleteTask = (index: number) => {
-  console.log('Eliminando tarea con índice:', index);
-  setTasks((prev) => prev.filter((_, i) => i !== index));
-};
+    setTasks((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <TaskContext.Provider value={{ tasks, addTask, editTask, deleteTask }}>
