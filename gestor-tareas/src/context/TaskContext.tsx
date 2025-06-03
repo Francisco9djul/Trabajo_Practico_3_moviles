@@ -3,17 +3,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TASKS_STORAGE_KEY = '@tasks_storage_key';
 
+type Task = {
+  title: string;
+  description: string;
+};
+
 type TaskContextType = {
-  tasks: string[];
-  addTask: (task: string) => void;
-  editTask: (index: number, newTask: string) => void;
+  tasks: Task[];
+  addTask: (task: Task) => void;
+  editTask: (index: number, newTask: Task) => void;
   deleteTask: (index: number) => void;
 };
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   // Cargar tareas almacenadas al inicio
   useEffect(() => {
@@ -42,11 +47,11 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     saveTasks();
   }, [tasks]);
 
-  const addTask = (task: string) => {
+  const addTask = (task: Task) => {
     setTasks((prev) => [...prev, task]);
   };
 
-  const editTask = (index: number, newTask: string) => {
+  const editTask = (index: number, newTask: Task) => {
     setTasks((prev) =>
       prev.map((t, i) => (i === index ? newTask : t))
     );
