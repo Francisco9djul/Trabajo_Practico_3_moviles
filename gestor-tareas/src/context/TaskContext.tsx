@@ -6,6 +6,8 @@ const TASKS_STORAGE_KEY = '@tasks_storage_key';
 type Task = {
   title: string;
   description: string;
+  priority: 'Alta' | 'Media' | 'Baja';
+  status: 'Pendiente' | 'En Proceso' | 'Completada';
 };
 
 type TaskContextType = {

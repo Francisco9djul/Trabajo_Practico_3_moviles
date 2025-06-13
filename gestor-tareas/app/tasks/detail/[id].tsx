@@ -28,6 +28,12 @@ export default function TaskDetailScreen() {
       <Text style={styles.title}>Descripción:</Text>
       <Text style={styles.text}>{task.description || 'Sin descripción'}</Text>
 
+     <Text style={styles.title}>Prioridad:</Text>
+      <Text style={styles.text}>{task.priority}</Text>
+
+      <Text style={styles.title}>Estado:</Text>
+      <Text style={styles.text}>{task.status}</Text>
+      
       <Button title="Volver" onPress={() => router.push('/tasks')} />
     </View>
   );

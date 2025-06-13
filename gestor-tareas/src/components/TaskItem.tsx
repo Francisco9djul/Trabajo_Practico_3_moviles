@@ -1,76 +1,79 @@
-// src/components/TaskItem.tsx
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 interface TaskItemProps {
   title: string;
   description?: string;
-  onPress?: () => void;       // Para tocar todo el ítem
+  priority?: string;
+  status?: string;
+  onPress?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export default function TaskItem({ title, onPress, onEdit, onDelete }: TaskItemProps) {
+export default function TaskItem({
+  title,
+  description,
+  priority = 'Media',
+  status = 'Pendiente',
+  onPress,
+  onEdit,
+  onDelete,
+}: TaskItemProps) {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.touchable}>
-      <View style={styles.container}>
-        <Text style={styles.text}>{title}</Text>
+    <Pressable onPress={onPress} style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+      {description ? <Text style={styles.text}>{description}</Text> : null}
 
-        <View style={styles.buttonsContainer}>
-          {onEdit && (
-            <TouchableOpacity onPress={onEdit} style={styles.buttonEdit}>
-              <Text style={styles.buttonText}>Editar</Text>
-            </TouchableOpacity>
-          )}
-          {onDelete && (
-            <TouchableOpacity onPress={onDelete} style={styles.buttonDelete}>
-              <Text style={styles.buttonText}>Eliminar</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+      <View style={styles.metaContainer}>
+        <Text style={styles.meta}>🎯 Prioridad: <Text style={styles.value}>{priority}</Text></Text>
+        <Text style={styles.meta}>📌 Estado: <Text style={styles.value}>{status}</Text></Text>
       </View>
-    </TouchableOpacity>
+
+      <View style={styles.actions}>
+        {onEdit && <Text onPress={onEdit} style={styles.link}>✏️ Editar</Text>}
+        {onDelete && <Text onPress={onDelete} style={styles.link}>🗑️ Eliminar</Text>}
+      </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  touchable: {
-    marginVertical: 6,
-    borderRadius: 8,
-  },
   container: {
-    backgroundColor: '#fff',
     padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
     borderRadius: 8,
-    elevation: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderColor: '#ccc',
+    backgroundColor: '#fefefe',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 4,
   },
   text: {
-    fontSize: 16,
-    flex: 1,
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 8,
   },
-  buttonsContainer: {
+  metaContainer: {
+    marginTop: 4,
+  },
+  meta: {
+    fontSize: 13,
+    color: '#666',
+  },
+  value: {
+    fontWeight: '600',
+    color: '#000',
+  },
+  actions: {
     flexDirection: 'row',
-    gap: 8,
+    marginTop: 10,
   },
-  buttonEdit: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginLeft: 8,
-  },
-  buttonDelete: {
-    backgroundColor: '#F44336',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginLeft: 8,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  link: {
+    marginRight: 15,
+    color: 'blue',
+    fontSize: 14,
   },
 });

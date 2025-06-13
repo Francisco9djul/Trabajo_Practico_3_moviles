@@ -1,6 +1,6 @@
 // src/components/Input.tsx
 import React from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
 interface InputProps {
   value: string;
@@ -15,6 +15,7 @@ export default function Input({ value, onChangeText, placeholder }: InputProps) 
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
+      multiline 
     />
   );
 }

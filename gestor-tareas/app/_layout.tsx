@@ -17,7 +17,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <TaskProvider> {/*  envolvemos todo en el contexto */}
+      <TaskProvider> 
         <Stack
           screenOptions={{
             headerShown: true,
