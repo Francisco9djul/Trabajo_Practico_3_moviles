@@ -1,7 +1,14 @@
-import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import Button from '../../src/components/Button';
 import TaskItem from '../../src/components/TaskItem';
 import { useTasks } from '../../src/context/TaskContext';
@@ -13,12 +20,27 @@ export default function TaskListScreen() {
   const { tasks, deleteTask } = useTasks();
   const router = useRouter();
 
-  const [priorityFilter, setPriorityFilter] = useState<Priority | 'Todas'>('Todas');
-  const [statusFilter, setStatusFilter] = useState<Status | 'Todos'>('Todos');
+  const [priorityOpen, setPriorityOpen] = useState(false);
+  const [priorityValue, setPriorityValue] = useState<Priority | 'Todas'>('Todas');
+  const [priorityItems, setPriorityItems] = useState([
+    { label: 'Todas', value: 'Todas' },
+    { label: 'Alta', value: 'Alta' },
+    { label: 'Media', value: 'Media' },
+    { label: 'Baja', value: 'Baja' },
+  ]);
+
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [statusValue, setStatusValue] = useState<Status | 'Todos'>('Todos');
+  const [statusItems, setStatusItems] = useState([
+    { label: 'Todos', value: 'Todos' },
+    { label: 'Pendiente', value: 'Pendiente' },
+    { label: 'En Proceso', value: 'En Proceso' },
+    { label: 'Completada', value: 'Completada' },
+  ]);
 
   const filteredTasks = tasks.filter(task =>
-    (priorityFilter === 'Todas' || task.priority === priorityFilter) &&
-    (statusFilter === 'Todos' || task.status === statusFilter)
+    (priorityValue === 'Todas' || task.priority === priorityValue) &&
+    (statusValue === 'Todos' || task.status === statusValue)
   );
 
   const handleDeleteTask = (index: number) => {
@@ -40,32 +62,37 @@ export default function TaskListScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <Text style={styles.title}>Mis Tareas</Text>
 
       <Text style={styles.filterTitle}>Filtrar por Prioridad:</Text>
-      <Picker
-        selectedValue={priorityFilter}
-        onValueChange={(value) => setPriorityFilter(value)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Todas" value="Todas" />
-        <Picker.Item label="Alta" value="Alta" />
-        <Picker.Item label="Media" value="Media" />
-        <Picker.Item label="Baja" value="Baja" />
-      </Picker>
+      <View style={{ zIndex: priorityOpen ? 1000 : 1 }}>
+        <DropDownPicker
+          open={priorityOpen}
+          value={priorityValue}
+          items={priorityItems}
+          setOpen={setPriorityOpen}
+          setValue={setPriorityValue}
+          setItems={setPriorityItems}
+          placeholder="Seleccionar prioridad"
+        />
+      </View>
 
       <Text style={styles.filterTitle}>Filtrar por Estado:</Text>
-      <Picker
-        selectedValue={statusFilter}
-        onValueChange={(value) => setStatusFilter(value)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Todos" value="Todos" />
-        <Picker.Item label="Pendiente" value="Pendiente" />
-        <Picker.Item label="En Proceso" value="En Proceso" />
-        <Picker.Item label="Completada" value="Completada" />
-      </Picker>
+      <View style={{ zIndex: statusOpen ? 999 : 0 }}>
+        <DropDownPicker
+          open={statusOpen}
+          value={statusValue}
+          items={statusItems}
+          setOpen={setStatusOpen}
+          setValue={setStatusValue}
+          setItems={setStatusItems}
+          placeholder="Seleccionar estado"
+        />
+      </View>
 
       {filteredTasks.length === 0 ? (
         <Text style={styles.noTasks}>No hay tareas que coincidan con los filtros.</Text>
@@ -85,9 +112,10 @@ export default function TaskListScreen() {
             />
           )}
         />
-      )} 
+      )}
+
       <Button title="Volver" onPress={() => router.push('./(tabs)')} />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -95,11 +123,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
   filterTitle: { marginTop: 10, fontWeight: '600' },
-  picker: {
-    height: 50,
-    marginBottom: 10,
-    backgroundColor: '#f0f0f0',
-  },
   noTasks: {
     fontStyle: 'italic',
     color: '#555',
