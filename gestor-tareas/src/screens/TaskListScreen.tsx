@@ -12,6 +12,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Button from '../../src/components/Button';
 import TaskItem from '../../src/components/TaskItem';
 import { useTasks } from '../../src/context/TaskContext';
+import EmptyList from '../../src/components/EmptyList';
 
 type Priority = 'Alta' | 'Media' | 'Baja';
 type Status = 'Pendiente' | 'En Proceso' | 'Completada';
@@ -94,25 +95,23 @@ export default function TaskListScreen() {
         />
       </View>
 
-      {filteredTasks.length === 0 ? (
-        <Text style={styles.noTasks}>No hay tareas que coincidan con los filtros.</Text>
-      ) : (
-        <FlatList
-          data={filteredTasks}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <TaskItem
-              title={item.title}
-              description={item.description}
-              priority={item.priority}
-              status={item.status}
-              onPress={() => handleViewTask(index)}
-              onEdit={() => editTask(index)}
-              onDelete={() => handleDeleteTask(index)}
-            />
-          )}
+      <FlatList
+      data={filteredTasks}
+      keyExtractor={(_, index) => index.toString()}
+      renderItem={({ item, index }) => (
+        <TaskItem
+          title={item.title}
+          description={item.description}
+          priority={item.priority}
+          status={item.status}
+          onPress={() => handleViewTask(index)}
+          onEdit={() => editTask(index)}
+          onDelete={() => handleDeleteTask(index)}
         />
       )}
+      ListEmptyComponent={<EmptyList />}
+    />
+
 
       <Button title="Volver" onPress={() => router.push('./(tabs)')} />
     </KeyboardAvoidingView>
